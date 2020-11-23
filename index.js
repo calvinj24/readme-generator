@@ -1,9 +1,6 @@
 const inquirer = require('inquirer');
-
-const prompt = () => {
-    return inquirer.prompt
-}
-
+const fs = require('fs');
+const generateMarkdown = require('./utils/generateMarkdown');
 
 // array of questions for user
 const promptUser = () => {
@@ -20,12 +17,12 @@ const promptUser = () => {
         },
         {
             type:'input',
-            name:'install-instructions',
+            name:'install',
             message:"Enter your project's install instructions:"
         },
         {
             type:'input',
-            name:'usage-information',
+            name:'usage',
             message:"Enter your project's usage information:"
         },
         {
@@ -35,7 +32,7 @@ const promptUser = () => {
         },
         {
             type:'input',
-            name:'test-instructions',
+            name:'test',
             message:"Enter your project's test instructions:"
         },
         {
@@ -49,16 +46,28 @@ const promptUser = () => {
             message:"What is your email address?"
         }        
     ])
-}
+};
 
 // function to write README file
 function writeToFile(fileName, data) {
-}
+    var filePath='./files/'+ fileName+'.md';
+
+    fs.writeFile(filePath, data, err => {
+        if (err) throw err;
+    });
+};
 
 // function to initialize program
 function init() {
-    promptUser();
+    promptUser()
+        .then(readMeData => {
+            return generateMarkdown(readMeData);
+        })
+        .then(markdown => {
+            return writeToFile("README",markdown);
+        })
 }
+
 
 // function call to initialize program
 init();
